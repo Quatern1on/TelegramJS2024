@@ -59,6 +59,9 @@ import PopupBoostsViaGifts from '../popups/boostsViaGifts';
 import AppStatisticsTab from '../sidebarRight/tabs/statistics';
 import {ChatType} from './chat';
 import AppBoostsTab from '../sidebarRight/tabs/boosts';
+import ChatStream from '../liveStream/chatStream';
+import AppMediaViewer from '../appMediaViewer';
+import StreamViewer from '../liveStream/streamViewer';
 
 type ButtonToVerify = {element?: HTMLElement, verify: () => boolean | Promise<boolean>};
 
@@ -85,6 +88,7 @@ export default class ChatTopbar {
   private chatActions: ChatActions;
   private chatRequests: ChatRequests;
   private chatAudio: ChatAudio;
+  private chatStream: ChatStream;
   public pinnedMessage: ChatPinnedMessage;
 
   private setUtilsRAF: number;
@@ -162,6 +166,7 @@ export default class ChatTopbar {
     this.chatAudio = new ChatAudio(this, this.chat, this.managers);
     this.chatRequests = new ChatRequests(this, this.chat, this.managers);
     this.chatActions = new ChatActions(this, this.chat, this.managers);
+    this.chatStream = new ChatStream(this, this.chat, this.managers);
 
     if(this.menuButtons.length) {
       this.btnMore = ButtonMenuToggle({
@@ -211,6 +216,11 @@ export default class ChatTopbar {
 
     if(this.chatActions) {
       this.container.append(this.chatActions.divAndCaption.container);
+    }
+
+    if(this.chatStream) {
+      this.container.append(this.chatStream.divAndCaption.container);
+      this.chatStream.onClickListener = this.onJoinGroupCallClick.bind(this);
     }
 
     // * construction end
@@ -626,7 +636,7 @@ export default class ChatTopbar {
   }
 
   private onJoinGroupCallClick = () => {
-    this.chat.appImManager.joinGroupCall(this.peerId);
+    new StreamViewer().openStream(this.chat.peerId.toChatId());
   };
 
   private get peerId() {
@@ -696,6 +706,12 @@ export default class ChatTopbar {
     this.listenerSetter.add(rootScope)('chat_update', (chatId) => {
       if(this.peerId === chatId.toPeerId(true)) {
         const chat = apiManagerProxy.getChat(chatId) as Channel/*  | Chat */;
+
+        if(chat.pFlags.call_active && this.chatStream.groupCall === null) {
+          this.chatStream.setPeerId(this.peerId).then((callback) => {
+            callback();
+          });
+        }
 
         this.btnJoin.classList.toggle('hide', !(chat as Channel)?.pFlags?.left);
         this.setUtilsWidth();
@@ -767,6 +783,16 @@ export default class ChatTopbar {
 
       if(mids) {
         this.setTitle();
+      }
+    });
+
+    this.listenerSetter.add(rootScope)('group_call_update', async(groupCall) => {
+      if(groupCall.id === this.chatStream.groupCall?.id) {
+        if(groupCall._ === 'groupCallDiscarded') {
+          this.chatStream.unset()
+        } else {
+          this.chatStream.update(groupCall.participants_count);
+        }
       }
     });
 
@@ -880,7 +906,8 @@ export default class ChatTopbar {
       status?.prepare(true),
       apiManagerProxy.getState(),
       modifyAckedPromise(this.chatRequests.setPeerId(peerId)),
-      modifyAckedPromise(this.chatActions.setPeerId(peerId))
+      modifyAckedPromise(this.chatActions.setPeerId(peerId)),
+      this.chatStream.setPeerId(peerId)
     ] as const;
 
     const [
@@ -892,7 +919,8 @@ export default class ChatTopbar {
       setStatusCallback,
       state,
       setRequestsCallback,
-      setActionsCallback
+      setActionsCallback,
+      setStreamCallback
     ] = await Promise.all(promises);
 
     if(!middleware() && newAvatarMiddlewareHelper) {
@@ -978,6 +1006,8 @@ export default class ChatTopbar {
         this.chatActions.unset(peerId);
       }
 
+      this.chatStream.unset();
+
       callbackify(setRequestsCallback.result, (callback) => {
         if(!middleware()) {
           return;
@@ -987,6 +1017,14 @@ export default class ChatTopbar {
       });
 
       callbackify(setActionsCallback.result, (callback) => {
+        if(!middleware()) {
+          return;
+        }
+
+        callback();
+      });
+
+      callbackify(setStreamCallback, (callback) => {
         if(!middleware()) {
           return;
         }
@@ -1112,6 +1150,7 @@ export default class ChatTopbar {
       this.chatAudio,
       this.chatRequests,
       this.chatActions,
+      this.chatStream,
       this.pinnedMessage?.pinnedMessageContainer
     ].filter(Boolean);
     const count = containers.reduce((acc, container) => {

@@ -5,10 +5,10 @@
  */
 
 @mixin sidebar-transform($centered: 0, $transform: true) {
-	@include respond-to(medium-screens) {
-		transition: transform var(--transition-standard-out);
+  @include respond-to(medium-screens) {
+    transition: transform var(--transition-standard-out);
 
-		body.is-right-column-shown & {
+    body.is-right-column-shown & {
       @if $transform {
         @if $centered != 0 {
           transform: translate3d(calc(var(--right-column-width) * #{$centered} * -.5 * var(--reflect)), 0, 0);
@@ -17,20 +17,20 @@
         }
       }
 
-			transition: transform var(--transition-standard-in);
-		}
+      transition: transform var(--transition-standard-in);
+    }
 
-		body.animation-level-0 & {
-			transition: none;
-		}
+    body.animation-level-0 & {
+      transition: none;
+    }
 
-		@content;
-	}
+    @content;
+  }
 }
 
 body.is-calling {
   .topbar {
-    &, 
+    &,
     &-call-container {
       transform: translateY(0);
     }
@@ -47,7 +47,7 @@ body.is-calling {
 
   &:not(.backwards) {
     .topbar {
-      &, 
+      &,
       &-call-container {
         transform: translateY(var(--topbar-call-height));
       }
@@ -67,13 +67,14 @@ body.is-right-column-shown {
 
 .topbar {
   --topbar-height: 3.5rem;
-  
+
   --pinned-floating-audio-height: 0px;
   --pinned-floating-message-height: 0px;
   --pinned-floating-requests-height: 0px;
   --pinned-floating-actions-height: 0px;
-	--pinned-floating-height: calc(var(--pinned-floating-audio-height) + var(--pinned-floating-message-height) + var(--pinned-floating-requests-height) + var(--pinned-floating-actions-height) + var(--topbar-floating-call-height));
-  
+  --pinned-floating-stream-height: 0px;
+  --pinned-floating-height: calc(var(--pinned-floating-audio-height) + var(--pinned-floating-message-height) + var(--pinned-floating-requests-height) + var(--pinned-floating-actions-height) + var(--pinned-floating-stream-height) + var(--topbar-floating-call-height));
+
   --pinned-container-height: 3.25rem;
 	--pinned-audio-height: var(--pinned-container-height);
 	--pinned-message-height: var(--pinned-container-height);
@@ -198,7 +199,7 @@ body.is-right-column-shown {
 		}
 	}
 
-	.peer-title, 
+  .peer-title,
 	.info {
 		@include text-overflow();
 		line-height: var(--line-height);
@@ -219,8 +220,8 @@ body.is-right-column-shown {
 			margin-inline-start: 0;
 		}
 	}
-	
-	.chat-info {
+
+  .chat-info {
 		flex: 1 1 auto;
 		overflow: hidden;
 		padding-inline-start: 49px;
@@ -231,8 +232,8 @@ body.is-right-column-shown {
 		@include respond-to(handhelds) {
 			padding-inline-start: 52px;
     }
-		
-		//&.have-utils-width {
+
+    //&.have-utils-width {
 			max-width: calc(100% - var(--utils-width));
 
 			@include respond-to(medium-screens) {
@@ -284,15 +285,15 @@ body.is-right-column-shown {
 			display: none;
 		}
 	}
-	
-	.content {
+
+  .content {
 		flex: 1 1 auto;
 		padding-inline-start: 1.125rem;
 		max-width: 100%;
 		overflow: hidden;
 	}
-	
-	.person {
+
+  .person {
 		display: flex;
 		align-items: center;
     height: 100%;
@@ -305,8 +306,8 @@ body.is-right-column-shown {
 			font-size: .875rem;
 			//line-height: 18px;
 			color: var(--secondary-text-color);
-			
-			.online {
+
+          .online {
 				color: var(--primary-color);
 			}
 		}
@@ -378,7 +379,7 @@ body.is-right-column-shown {
           .topbar-call-right {
             width: auto;
           }
-  
+
           .group-call-description {
             display: none;
           }
@@ -399,7 +400,7 @@ body.is-right-column-shown {
       }
     }
 
-    &-left, 
+    &-left,
     &-right {
       flex: 0 0 auto;
       width: 12rem;

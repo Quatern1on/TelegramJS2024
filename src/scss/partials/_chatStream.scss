@@ -1,0 +1,105 @@
+.pinned-stream-wrapper {
+  padding: 0.5rem 1rem !important;
+}
+
+.pinned-stream-content {
+  background: linear-gradient(90deg, rgba(69, 136, 227, 0.1), rgba(151, 111, 255, 0.1) 55%, rgba(228, 106, 206, 0.1));
+  border-radius: 0.25rem;
+  overflow: hidden;
+
+  padding: 3px 9px;
+
+  position: relative;
+
+  flex: 1;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  @include respond-to(medium-screens) {
+    transition: margin-right var(--transition-standard-out);
+
+    body.is-right-column-shown & {
+      margin-right: var(--right-column-width);
+      transition: margin-right var(--transition-standard-in);
+    }
+
+    body.animation-level-0 & {
+      transition: none;
+    }
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: #4588E3;
+  }
+
+  .pinned-stream-title, .pinned-stream-subtitle {
+    color: #4588E3;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 18px;
+  }
+
+  .pinned-stream-subtitle {
+    font-weight: 400;
+  }
+
+  .btn-pinned-stream {
+    position: relative;
+
+    background: #E46ACE;
+    color: #fff;
+    font-size: 14px;
+
+    padding: 2px 8px;
+    border-radius: 500px;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: -2px;
+      bottom: -2px;
+      right: -2px;
+      left: -2px;
+
+      animation: 1.3s ease-out sliding-background;
+
+      border-radius: 500px;
+
+      background-image: linear-gradient(90deg, #E46ACE, lighten(#E46ACE, 50%), #E46ACE);
+      background-color: #E46ACE;
+      background-repeat: no-repeat;
+      background-size: 99% 100%;
+      background-position: -10000% 0, 0 0;
+
+      z-index: -1;
+    }
+
+    &:hover {
+      background: darken(#E46ACE, 5%) !important;
+      &::before {
+        background: darken(#E46ACE, 5%) !important;
+      }
+    }
+  }
+}
+
+@keyframes sliding-background {
+  from {
+    background-position: -10000% 0, 0 0
+  }
+  to {
+    background-position: 10000% 0, 0 0
+  }
+}
+
+.topbar.is-pinned-stream-floating {
+  --pinned-floating-stream-height: var(--pinned-container-height);
+}

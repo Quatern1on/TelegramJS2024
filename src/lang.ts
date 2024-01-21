@@ -2144,6 +2144,7 @@ const lang = {
   'Peer.Activity.Chat.SendingFile': '%@ is sending a file',
   'Peer.Activity.Chat.ChoosingSticker': '%@ is choosing a sticker',
   'Peer.Activity.Chat.EnjoyingAnimations': '%@ is watching %@',
+  'Peer.Activity.Chat.Streaming': 'streaming',
   'Peer.Activity.Chat.Multi.PlayingGame1': '%@ and %d others are playing a game',
   'Peer.Activity.Chat.Multi.TypingText1': '%@ and %d others are typing',
   'Peer.Activity.Chat.Multi.SendingPhoto1': '%@ and %d others are sending photos',
@@ -2171,6 +2172,7 @@ const lang = {
     'one_value': '%d subscriber',
     'other_value': '%d subscribers'
   },
+  'Peer.LiveStream.Watching': '%d watching',
   'PeerInfo.Administrators': 'Administrators',
   'PeerInfo.DeleteChannel': 'Delete Channel',
   'PeerInfo.Discussion': 'Discussion',
